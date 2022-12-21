@@ -181,16 +181,34 @@ RSpec.describe Datadog::Tracing::Contrib::Httpclient::Instrumentation do
             expect(span.get_tag(Datadog::Tracing::Metadata::Ext::HTTP::TAG_STATUS_CODE)).to eq(code.to_s)
           end
 
-          it 'has error set' do
-            expect(span).to have_error
+          context 'with default response code errors' do
+            it 'has error set' do
+              expect(span).to have_error
+            end
+
+            it 'has error type set' do
+              expect(span).to have_error_type('Error 404')
+            end
+
+            it 'has error message' do
+              expect(span).to have_error_message(body.to_json)
+            end
           end
 
-          it 'has error type set' do
-            expect(span).to have_error_type('Error 404')
-          end
+          context 'when response code error configuration does not include 404' do
+            let(:configuration_options) { { response_code_errors: 500...599 } }
 
-          it 'has error message' do
-            expect(span).to have_error_message(body.to_json)
+            it 'does not have error set' do
+              expect(span).to_not have_error
+            end
+
+            it 'does not have error type set' do
+              expect(span).to have_error_type(nil)
+            end
+
+            it 'does not have error message' do
+              expect(span).to have_error_message(nil)
+            end
           end
 
           it_behaves_like 'environment service name', 'DD_TRACE_HTTPCLIENT_SERVICE_NAME'
