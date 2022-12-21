@@ -1191,6 +1191,7 @@ end
 | `distributed_tracing` | Enables [distributed tracing](#distributed-tracing) | `true` |
 | `service_name` | Service name for `httprb` instrumentation. | `'httprb'` |
 | `split_by_domain` | Uses the request domain as the service name when set to `true`. | `false` |
+| `response_code_errors` | Range or Array of HTTP status codes that should be traced as errors. | `400...599` |
 
 ### httpclient
 
